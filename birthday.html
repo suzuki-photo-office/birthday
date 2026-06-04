@@ -1,3 +1,31 @@
+提示いただいたコードをベースに、ご要望の修正（「撮影内容」のチェックボックス化、「希望プラン」への『相談したい』の追加、「オプション」の表記変更と『主役の追加』への変更、「お子様のお名前」のラベル変更）を反映させました。
+
+また、撮影内容をチェックボックス（複数選択）に変更したことに伴い、JavaScriptのバリデーションやLINEへの送信メッセージの組み立て処理も破綻しないよう最適化してあります。
+
+### 主な修正・調整点
+
+1. **撮影内容の変更（ラジオボタン ➔ チェックボックス）**:
+* 複数選択できるように `input[type="checkbox"]` に変更しました。
+* 「その他」にチェックを入れたとき、記述した内容を `撮影内容: ハーフバースデー, その他（7五三）` のようにカンマ区切りで綺麗にまとめてLINEに送信するロジックに変更しました。
+
+
+2. **希望プランの変更**:
+* `相談したい` の選択肢（ラジオボタン）を追加しました。
+
+
+3. **オプションの変更**:
+* 各オプションに `¥5,500` の価格表記を追加。
+* 2つ目のオプションを「ミニプランへの兄弟ショット追加」から `主役の追加 ¥5,500` に変更しました。
+
+
+4. **お子様のお名前の変更**:
+* ラベルから `（決まっていれば）` を削除しました。
+
+
+
+以下が修正済みの全コードです。そのまま差し替えてご利用ください。
+
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -96,20 +124,20 @@
             </div>
 
             <div class="form-group" id="group_type">
-                <label>撮影内容<span class="required-badge">必須</span></label>
+                <label>撮影内容（複数選択可）<span class="required-badge">必須</span></label>
                 <div class="choice-group">
-                    <label class="choice-label"><input type="radio" name="type" value="マタニティ"> マタニティ</label>
-                    <label class="choice-label"><input type="radio" name="type" value="ハーフバースデー"> ハーフバースデー</label>
-                    <label class="choice-label"><input type="radio" name="type" value="1歳バースデー"> 1歳バースデー</label>
-                    <label class="choice-label"><input type="radio" name="type" value="2歳バースデー"> 2歳バースデー</label>
-                    <label class="choice-label"><input type="radio" name="type" value="入園入学"> 入園入学</label>
-                    <label class="choice-label"><input type="radio" name="type" value="成人式"> 成人式</label>
-                    <label class="choice-label"><input type="radio" name="type" id="typeOther" value="その他"> その他（以下にご記入ください）</label>
+                    <label class="choice-label"><input type="checkbox" name="type" value="マタニティ"> マタニティ</label>
+                    <label class="choice-label"><input type="checkbox" name="type" value="ハーフバースデー"> ハーフバースデー</label>
+                    <label class="choice-label"><input type="checkbox" name="type" value="1歳バースデー"> 1歳バースデー</label>
+                    <label class="choice-label"><input type="checkbox" name="type" value="2歳バースデー"> 2歳バースデー</label>
+                    <label class="choice-label"><input type="checkbox" name="type" value="入園入学"> 入園入学</label>
+                    <label class="choice-label"><input type="checkbox" name="type" value="成人式"> 成人式</label>
+                    <label class="choice-label"><input type="checkbox" name="type" id="typeOther" value="その他"> その他（以下にご記入ください）</label>
                 </div>
                 <div class="other-text-area">
                     <input type="text" id="typeOtherText" placeholder="例：7五三、ハーフ成人式など" onfocus="document.getElementById('typeOther').checked=true;">
                 </div>
-                <div class="error-message">撮影内容を選択してください。</div>
+                <div class="error-message">撮影内容を1つ以上選択してください。</div>
             </div>
 
             <div class="form-group" id="group_date1">
@@ -150,6 +178,7 @@
                     <label class="choice-label"><input type="radio" name="plan" value="ミニプラン ¥40,700"> ミニプラン ¥40,700</label>
                     <label class="choice-label"><input type="radio" name="plan" value="スタンダードプラン ¥51,700"> スタンダードプラン ¥51,700</label>
                     <label class="choice-label"><input type="radio" name="plan" value="プレミアムプラン ¥62,700"> プレミアムプラン ¥62,700</label>
+                    <label class="choice-label"><input type="radio" name="plan" value="相談したい"> 相談したい</label>
                 </div>
                 <div class="error-message">希望プランを選択してください。</div>
             </div>
@@ -158,10 +187,10 @@
                 <label>オプション<span class="optional-badge">任意</span></label>
                 <div class="choice-group">
                     <label class="choice-label">
-                        <input type="checkbox" name="option" value="生花撮影" id="optFlower" onchange="toggleFlowerDetail(this.checked)"> 生花撮影
+                        <input type="checkbox" name="option" value="生花撮影 ¥5,500" id="optFlower" onchange="toggleFlowerDetail(this.checked)"> 生花撮影 ¥5,500
                     </label>
                     <label class="choice-label">
-                        <input type="checkbox" name="option" value="ミニプランへの兄弟ショット追加"> ミニプランへの兄弟ショット追加
+                        <input type="checkbox" name="option" value="主役の追加 ¥5,500"> 主役の追加 ¥5,500
                     </label>
                 </div>
 
@@ -198,7 +227,7 @@
             </div>
 
             <div class="form-group">
-                <label for="babyName">お子様のお名前（決まっていれば）<span class="optional-badge">任意</span></label>
+                <label for="babyName">お子様のお名前<span class="optional-badge">任意</span></label>
                 <input type="text" id="babyName" placeholder="例：ひなた（漢字：陽向）">
             </div>
 
@@ -277,15 +306,19 @@
             const address = document.getElementById('address').value.trim();
             if (!address) { document.getElementById('group_address').classList.add('has-error'); hasError = true; }
             
-            const typeRadio = document.querySelector('input[name="type"]:checked');
-            let typeText = '';
-            if (typeRadio) {
-                if (typeRadio.value === 'その他') {
+            // 撮影内容のチェックボックス（複数選択）取得ロジック
+            const typeBoxes = document.querySelectorAll('input[name="type"]:checked');
+            const types = [];
+            typeBoxes.forEach((cb) => {
+                if (cb.value === 'その他') {
                     const otherText = document.getElementById('typeOtherText').value.trim();
-                    typeText = otherText ? `その他（${otherText}）` : 'その他（内容未記入）';
-                } else { typeText = typeRadio.value; }
-            }
-            if (!typeText) { document.getElementById('group_type').classList.add('has-error'); hasError = true; }
+                    types.push(otherText ? `その他（${otherText}）` : 'その他（内容未記入）');
+                } else {
+                    types.push(cb.value);
+                }
+            });
+            const typeText = types.join(', ');
+            if (types.length === 0) { document.getElementById('group_type').classList.add('has-error'); hasError = true; }
             
             // 日付と時間ラジオの取得
             const date1 = document.getElementById('date1').value;
@@ -317,7 +350,7 @@
             const optionBoxes = document.querySelectorAll('input[name="option"]:checked');
             const options = [];
             optionBoxes.forEach((cb) => { 
-                if (cb.value === '生花撮影') {
+                if (cb.value.indexOf('生花撮影') !== -1) {
                     const checkedColors = [];
                     const fColorChecks = document.querySelectorAll('input[name="flowerColor"]:checked');
                     fColorChecks.forEach(colorCb => {
@@ -332,7 +365,7 @@
                     }
                     
                     const fColor = checkedColors.length > 0 ? checkedColors.join(', ') : '未選択';
-                    options.push(`生花撮影 (希望色味: ${fColor})`);
+                    options.push(`生花撮影 ¥5,500 (希望色味: ${fColor})`);
                 } else {
                     options.push(cb.value);
                 }
@@ -384,3 +417,5 @@ ${questions}
     </script>
 </body>
 </html>
+
+```
